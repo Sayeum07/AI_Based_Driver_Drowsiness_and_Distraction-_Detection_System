@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SafeOnix | Driver Monitoring System</title>
+    <link rel="stylesheet" href="/static/css/home.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ... existing code ... */
+        /* How It Works Interactivity */
+     
+        /* Progress Bar */
+        .steps-progress {
+            position: absolute;
+            left: 0;
+            top: -24px;
+            width: 100%;
+            height: 6px;
+            background: #e0f7fa;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+        .steps-progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #3a0ca3, #3a0ca3);
+            transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+        }
+        /* Safety First Counting Animation */
+        .stat-card h4 {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #7f8cff;
+            margin: 0;
+        }
+        .profile-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin: 2rem 0;
+            max-width: 900px;
+            margin: 2rem auto;
+        }
+        
+        .profile-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .profile-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .profile-card i {
+            font-size: 3rem;
+            color: #7f8cff;
+            margin-bottom: 1rem;
+        }
+        
+        .profile-card h3 {
+            color: #fff;
+            margin: 0.5rem 0;
+            font-size: 1.5rem;
+        }
+        
+        .profile-card p {
+            color: #b8c1ec;
+            margin: 0;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="main-nav">
+        <div class="nav-logo">
+            <img src="/static/images/safeonix-logo.png" alt="SafeOnix Logo" style="height: 4rem; width: auto; vertical-align: middle;">
+        </div>
+        <ul class="nav-links">
+            <li><a href="#features">Features</a></li>
+            <li><a href="#how-it-works">How It Works</a></li>
+            <li><a href="#safety">Safety</a></li>
+            <li><a href="#about">About</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="home-container">
+        <div class="hero-content">
+            <div class="logo">
+                <img src="/static/images/safeonix-logo2.png" alt="SafeOnix Logo" style="height: 12rem; width: auto; vertical-align: middle;">
+            </div>
+            <h1>Driver Monitoring System</h1>
+            <p>Advanced real-time drowsiness & distraction detection for safer driving</p>
+            
+            <div class="profile-grid">
+                {% for profile_id, profile in profiles.items() %}
+                <div class="profile-card" onclick="selectProfile('{{ profile_id }}')">
+                    <i class="fas fa-user-circle"></i>
+                    <h3>{{ profile.name }}</h3>
+                    <p>{{ profile.email }}</p>
+                </div>
+                {% endfor %}
+                <!-- Add New Profile Card -->
+                <div class="profile-card" id="addProfileCard" onclick="openAddProfileModal()" style="border: 2px dashed #7f8cff; background: rgba(127,140,255,0.08);">
+                    <i class="fas fa-user-plus"></i>
+                    <h3>Add New Profile</h3>
+                </div>
+            </div>
+
+            <!-- Add Profile Modal -->
+            <div id="addProfileModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
+                <div style="background:#222; padding:2rem; border-radius:10px; max-width:350px; margin:auto; position:relative;">
+                    <button onclick="closeAddProfileModal()" style="position:absolute; top:10px; right:10px; background:none; border:none; color:#fff; font-size:1.5rem; cursor:pointer;">&times;</button>
+                    <h2 style="color:#fff; margin-bottom:1rem;">Add New Profile</h2>
+                    <form id="addProfileForm">
+                        <input type="text" id="newProfileName" placeholder="Name" required style="width:100%; padding:0.5rem; margin-bottom:1rem; border-radius:5px; border:none;">
+                        <input type="email" id="newProfileEmail" placeholder="Email" required style="width:100%; padding:0.5rem; margin-bottom:1rem; border-radius:5px; border:none;">
+                        <button type="submit" style="width:100%; background:#7f8cff; color:#fff; border:none; padding:0.75rem; border-radius:5px; font-size:1rem; cursor:pointer;">Add Profile</button>
+                    </form>
+                    <div id="addProfileError" style="color:#f44336; margin-top:0.5rem; display:none;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <section id="features" class="section">
+            <h2>Key Features</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <i class="fas fa-eye"></i>
+                    <h3>Drowsiness Detection</h3>
+                    <p>Real-time monitoring of driver's eyes and facial expressions to detect signs of fatigue.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-mobile-alt"></i>
+                    <h3>Distraction Alert</h3>
+                    <p>Instant alerts when driver shows signs of distraction or phone usage.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-bell"></i>
+                    <h3>Smart Alerts</h3>
+                    <p>Customizable audio and visual alerts to keep the driver focused and safe.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-chart-line"></i>
+                    <h3>Performance Analytics</h3>
+                    <p>Detailed insights into driving patterns and safety metrics.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- How It Works Section -->
+        <section id="how-it-works" class="section">
+            <h2>How It Works</h2>
+            <div class="steps-container">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Camera Setup</h3>
+                    <p>Position your camera to capture clear view of your face while driving.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Start Monitoring</h3>
+                    <p>Click 'Start Driving' to begin real-time monitoring of drowsiness and distraction.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Get Alerts</h3>
+                    <p>Receive instant alerts when signs of drowsiness or distraction are detected.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h3>View Analytics</h3>
+                    <p>Access your driving performance data through the dashboard.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Safety Section -->
+        <section id="safety" class="section fade-in-up">
+            <h2>Safety First</h2>
+            <div class="safety-content">
+                <div class="safety-info">
+                    <h3>Why Use DMS?</h3>
+                    <ul class="safety-list">
+                        <li><i class="fas fa-check"></i> Prevents accidents due to drowsy driving</li>
+                        <li><i class="fas fa-check"></i> Reduces distracted driving incidents</li>
+                        <li><i class="fas fa-check"></i> Improves overall road safety</li>
+                        <li><i class="fas fa-check"></i> Real-time monitoring and alerts</li>
+                        <li><i class="fas fa-check"></i> Easy to use and non-intrusive</li>
+                    </ul>
+                </div>
+                <div class="safety-stats">
+                    <div class="stat-card">
+                        <h4 id="stat1">0%</h4>
+                        <p>Reduction in accidents</p>
+                    </div>
+                    <div class="stat-card">
+                        <h4 id="stat2">0%</h4>
+                        <p>Detection accuracy</p>
+                    </div>
+                    <div class="stat-card">
+                        <h4 id="stat3">0/7</h4>
+                        <p>Monitoring capability</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="section">
+            <h2>About SafeOnix</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <p>SafeOnix is an advanced safety technology designed to prevent accidents caused by driver drowsiness and distraction. Using state-of-the-art computer vision and machine learning algorithms, SafeOnix provides real-time monitoring and alerts to keep drivers safe on the road.</p>
+                    <div class="tech-stack">
+                        <h3>Technology Stack</h3>
+                        <div class="tech-icons">
+                            <i class="fas fa-brain" title="AI & Machine Learning"></i>
+                            <i class="fas fa-camera" title="Computer Vision"></i>
+                            <i class="fas fa-mobile-alt" title="Real-time Processing"></i>
+                            <i class="fas fa-database" title="Data Analytics"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="contact-info">
+                    <h3>Contact Us</h3>
+                    <p>Have questions or need support? Reach out to us:</p>
+                    <div class="contact-methods">
+                        <a href="mailto:support@dms.com" class="contact-link">
+                            <i class="fas fa-envelope"></i> support@dms.com
+                        </a>
+                        <a href="tel:+1234567890" class="contact-link">
+                            <i class="fas fa-phone"></i> +1 (234) 567-890
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="main-footer">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <img src="/static/images/safeonix-logo.png" alt="SafeOnix Logo" style="height: 3.5rem; width: auto; vertical-align: middle;">
+                </div>
+                <div class="footer-links">
+                    <a href="#features">Features</a>
+                    <a href="#how-it-works">How It Works</a>
+                    <a href="#safety">Safety</a>
+                    <a href="#about">About</a>
+                </div>
+                <div class="footer-social">
+                    <a href="#" class="social-link"><i class="fab fa-facebook"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 SafeOnix. All rights reserved.</p>
+            </div>
+        </footer>
+
+        <!-- Animated background elements -->
+        <div class="background-elements">
+            <div class="floating-icon" style="--delay: 0s">
+                <i class="fas fa-car"></i>
+            </div>
+            <div class="floating-icon" style="--delay: 3s">
+                <i class="fas fa-eye"></i>
+            </div>
+            <div class="floating-icon" style="--delay: 6s">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <div class="floating-icon" style="--delay: 9s">
+                <i class="fas fa-road"></i>
+            </div>
+        </div>
+
+        <!-- Theme toggle button -->
+        <button class="theme-toggle" id="themeToggle">
+            <i class="fas fa-moon"></i>
+        </button>
+    </div>
+
+    <script src="/static/js/home.js"></script>
+    <script>
+    // ... existing code ...
+    // Section scroll reveal
+    function revealOnScroll() {
+        const fadeEls = document.querySelectorAll('.fade-in-up, .section');
+        fadeEls.forEach(el => {
+            const rect = el.getBoundingClientRect();
+            if (rect.top < window.innerHeight - 60) {
+                el.classList.add('visible');
+            }
+        });
+    }
+    window.addEventListener('scroll', revealOnScroll);
+    window.addEventListener('DOMContentLoaded', revealOnScroll);
+
+    // How It Works interactivity
+    const steps = document.querySelectorAll('.steps-container .step');
+    const progressBar = document.getElementById('stepsProgressBar');
+    let activeStep = null;
+
+    steps.forEach((step, idx) => {
+        step.addEventListener('mouseenter', () => setActiveStep(idx));
+        step.addEventListener('focus', () => setActiveStep(idx));
+        step.addEventListener('click', () => setActiveStep(idx));
+        step.addEventListener('mouseleave', () => setActiveStep(null));
+        step.addEventListener('blur', () => setActiveStep(null));
+    });
+
+    function setActiveStep(idx) {
+        steps.forEach((step, i) => {
+            if (i === idx) {
+                step.classList.add('active');
+            } else {
+                step.classList.remove('active');
+            }
+        });
+        if (idx !== null && idx >= 0) {
+            progressBar.style.width = ((idx+1)/steps.length*100) + '%';
+        } else {
+            progressBar.style.width = '0%';
+        }
+    }
+
+    // Safety First counting animation
+    function animateValue(id, start, end, duration) {
+        const obj = document.getElementById(id);
+        let startTimestamp = null;
+        const step = (timestamp) => {
+            if (!startTimestamp) startTimestamp = timestamp;
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            const value = Math.floor(progress * (end - start) + start);
+            obj.innerHTML = value + (id === 'stat3' ? '/7' : '%');
+            if (progress < 1) {
+                window.requestAnimationFrame(step);
+            }
+        };
+        window.requestAnimationFrame(step);
+    }
+
+    // Trigger counting animation when Safety section is visible
+    const safetySection = document.getElementById('safety');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                animateValue('stat1', 0, 20, 2000);
+                animateValue('stat2', 0, 95, 2000);
+                animateValue('stat3', 0, 24, 2000);
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.5 });
+
+    observer.observe(safetySection);
+
+    function selectProfile(profileId) {
+        fetch('/select_profile', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ profile_id: profileId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.href = '/dashboard';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+
+    // Modal logic for Add Profile
+    function openAddProfileModal() {
+        document.getElementById('addProfileModal').style.display = 'flex';
+        document.getElementById('addProfileError').style.display = 'none';
+        document.getElementById('addProfileForm').reset();
+    }
+    function closeAddProfileModal() {
+        document.getElementById('addProfileModal').style.display = 'none';
+    }
+    document.getElementById('addProfileForm').onsubmit = function(e) {
+        e.preventDefault();
+        const name = document.getElementById('newProfileName').value.trim();
+        const email = document.getElementById('newProfileEmail').value.trim();
+        fetch('/api/profiles', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, email })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data && data.name) {
+                closeAddProfileModal();
+                window.location.reload();
+            } else {
+                document.getElementById('addProfileError').textContent = 'Failed to add profile.';
+                document.getElementById('addProfileError').style.display = 'block';
+            }
+        })
+        .catch(() => {
+            document.getElementById('addProfileError').textContent = 'Failed to add profile.';
+            document.getElementById('addProfileError').style.display = 'block';
+        });
+    };
+    </script>
+</body>
+</html> 
